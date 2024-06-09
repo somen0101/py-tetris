@@ -1,15 +1,25 @@
 import random
 
 class MinoData:
-    SIZE = 50
+    @staticmethod
+    def get_random_mino():
+        T_MINO = [[1,1,2,2],[1,2,2,3],[1,3,2,4],[2,2,3,3]]
+        I_MINO = [[1,1,2,2],[1,2,2,3],[1,3,2,4],[1,4,2,5]]
+        
 
-    T_MINO = [[0,0,1,1],[0,1,1,2],[0,2,1,3],[1,1,2,2]]
+        MINOS_DICT = {
+            2 : T_MINO,
+            3 : I_MINO,
+        }
 
-    MINOS_DICT = {
-        1 : T_MINO
-    }
+        COLOR_DICT = {
+            2 : "red",
+            3 : "green",
+        }
 
-    @classmethod
-    def get_random_mino(cls):
-        RANDOM_MINOS_NUM = random.randint(1, 1)
-        return cls.MINOS_DICT[RANDOM_MINOS_NUM]
+        RANDOM_MINOS_NUM = random.randint(3, 3)
+
+        mino_data = MINOS_DICT[RANDOM_MINOS_NUM]
+        mino_color = COLOR_DICT[RANDOM_MINOS_NUM]
+
+        return mino_data, mino_color, RANDOM_MINOS_NUM

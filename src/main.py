@@ -1,43 +1,47 @@
 import tkinter
 import time
-from tetris import Mino, Field 
+from tetris import Mino, Field
+from mino_data import MinoData
 
 def main():
     root = tkinter.Tk()
     root.title(u"Py-Tetris")
 
     #画面サイズ
-    SIZE = 50
-    #盤面作成
-    test_field = Field()
+    SIZE = 30
     
-    def key_event(event):
-        key = event.keysym
-        if key == "Down":
-            test_mino.move_down_mino()
-        if key == "Left":
-            test_mino.move_left_mino()
-        if key == "Right":
-            test_mino.move_right_mino()
-
     #テトリスは10x20マスのゲーム 
-    canvas = tkinter.Canvas(root, width=11 * SIZE, height=21 * SIZE)
+    canvas = tkinter.Canvas(root, width=12 * SIZE, height=22 * SIZE)
     canvas.pack()
 
-    root.bind("<KeyPress>", key_event)
-    test_mino = Mino()
+    #盤面作成
+    test_field = Field()
+    #print(test_field.field)
+    #print(test_field.field_canvas_dict)
 
+    #テトリミノの生成
+    test_mino = Mino(test_field.field_canvas_dict)
+    root.bind("<KeyPress>", test_mino.key_event)
+    
     def draw_tetris():
         canvas.delete("all")
+        test_field.draw_field(canvas, SIZE)
         test_mino.draw_mino(canvas, SIZE)
-        root.after(50, draw_tetris)
+        print(test_mino.is_set)
+        if test_mino.is_set:
+            test_field.update_field_by_mino(test_mino)
+            test_field.check_bottom_row()
+            #print(test_field.field)
+            #ミノのインスタンスを初期化しミノを再生成
+            test_mino.__init__(test_field.field_canvas_dict)
+        canvas.after(50, draw_tetris)
     
     def auto_down():
         test_mino.move_down_mino()
-        root.after(1500, auto_down)
-    
-    root.after(50, draw_tetris)
-    root.after(1500, auto_down)
+        canvas.after(1000, auto_down)
+
+    draw_tetris()
+    auto_down()
 
     root.mainloop()
     
