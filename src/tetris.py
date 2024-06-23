@@ -77,8 +77,8 @@ class Field:
                                         block_tuple[2] * SIZE, 
                                         block_tuple[3] * SIZE)                  
     
-    #一番下の行を確認し埋まっていたら削除
-    def check_bottom_row(self):
+    #全ての行を確認し削除対象の行(埋まっている行)を削除
+    def check_delete_target_row(self):
         del_row_index_list = []
         for r_i, row in enumerate(self.field):
             if r_i == 21:
@@ -92,7 +92,7 @@ class Field:
         
         top_row = [1 if x == 0 or x == 11 else 0 for x in range(0, 12)]
         for r_i in del_row_index_list:
-            #の行を消し、一番上に新しい行を生成
+            #削除対象の行を消し、一番上に新しい行を生成
             del self.field[r_i]
             self.field.insert(0, top_row)
         self.field_canvas_dict = self.__convert_field_array_to_canvas_dict(self.field)
@@ -109,10 +109,11 @@ class Field:
 #テトリミノ
 class Mino:
     def __init__(self, field_canvas_dict):
-        mino_data, mino_color, mino_num = MinoData.get_random_mino()
+        mino_data, mino_color, mino_num, mino_center_block_index = MinoData.get_random_mino()
         self.mino = mino_data
         self.color = mino_color
         self.mino_num = mino_num
+        self.center_block_index = mino_center_block_index
         self.is_set = False
         self.field_canvas_dict = field_canvas_dict
 
@@ -133,8 +134,12 @@ class Mino:
             self.move_left_mino()
         if key == "Right":
             self.move_right_mino()
+        if key == "Up":
+            self.rotate_mino()
     
     def move_down_mino(self):
+        if self.is_set:
+            return
         if self.__can_down_move():
             for block in self.mino:
                 block[1] += 1
@@ -160,11 +165,21 @@ class Mino:
                 block[2] -= 1
     
     def rotate_mino(self):
-        for block in self.mino:
-            block[0] -= 1
-            block[2] -= 1
-        
-        return
+        if self.is_set:
+            return
+        if self.__can_rotate():
+            #回転中心軸のブロック
+            center_block = self.mino[self.center_block_index]
+            rotate_center_x = center_block[0]
+            rotate_center_y = center_block[1]
+            for b_i, block in enumerate(self.mino):
+                if b_i != self.center_block_index:
+                    before_x = block[0]
+                    before_y = block[1]
+                    block[0] = -before_y + rotate_center_x + rotate_center_y
+                    block[1] = before_x - rotate_center_x + rotate_center_y
+                    block[2] = block[0] + 1
+                    block[3] = block[1] + 1
     
     #これ以上右に動かせるかの判定
     def __can_right_move(self):
@@ -191,4 +206,24 @@ class Mino:
                 block_tuple = (block[0], block[1]+ 1, block[2], block[3]+ 1)
                 if canvas_dict.get(block_tuple) and canvas_dict.get(block_tuple) != 0:
                     return False
+        return True
+    
+    #回転可能の判定
+    def __can_rotate(self):
+        #回転中心軸のブロック
+        center_block = self.mino[self.center_block_index]
+        rotate_center_x = center_block[0]
+        rotate_center_y = center_block[1]
+        for canvas_dict in self.field_canvas_dict.values():
+            for b_i, block in enumerate(self.mino):
+                if b_i != self.center_block_index:
+                    before_x = block[0]
+                    before_y = block[1]
+                    x_1 = -before_y + rotate_center_x + rotate_center_y
+                    y_1 = before_x - rotate_center_x + rotate_center_y
+                    x_2 = x_1 + 1
+                    y_2 = y_1 + 1
+                    block_tuple = (x_1, y_1, x_2, y_2)
+                    if canvas_dict.get(block_tuple) and canvas_dict.get(block_tuple) != 0:
+                        return False
         return True

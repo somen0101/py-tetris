@@ -33,7 +33,7 @@ def main():
 
         if test_mino.is_set:
             test_field.update_field_by_mino(test_mino)
-            test_field.check_bottom_row()
+            test_field.check_delete_target_row()
             #ミノのインスタンスを初期化しミノを再生成
             test_mino.__init__(test_field.field_canvas_dict)
             
