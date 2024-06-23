@@ -5,7 +5,7 @@ Tetris App writing by Python
 
 <img width="364" alt="image" src="https://github.com/somen0101/py-tetris/assets/44900370/1d042060-bbef-4373-88d3-8ba0f2fdcd11">
 
-##実行
+## 実行
 ```
 cd py-tetris
 python ./src/main.py
