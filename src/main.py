@@ -22,7 +22,7 @@ def main():
     root.bind("<KeyPress>", test_mino.key_event)
     
     def draw_tetris():
-        #ゲームオーバーの場合はキャンバスを削除し再帰を抜ける
+        #ゲームオーバーの場合はキャンバスを削除し再帰を抜ける..
         if test_field.is_game_over():
             canvas.delete("all")
             return
